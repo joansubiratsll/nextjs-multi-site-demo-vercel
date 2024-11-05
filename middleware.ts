@@ -18,23 +18,24 @@ const siteConfigs = {
 } as const;
 
 export function middleware(request: NextRequest) {
-  const { headers } = request;
+  const { headers, nextUrl } = request;
   const host = headers.get('host') || '';
   let currentSite = 'default';
 
   // Check URL path for testing in Vercel deployment
-  const url = request.nextUrl;
-  if (url.pathname.startsWith('/leroi')) {
+  if (nextUrl.pathname.startsWith('/leroi/')) {
     currentSite = 'leroi';
-  } else if (url.pathname.startsWith('/compair')) {
+    nextUrl.pathname = nextUrl.pathname.replace('/leroi/', '/');
+  } else if (nextUrl.pathname.startsWith('/compair/')) {
     currentSite = 'compair';
+    nextUrl.pathname = nextUrl.pathname.replace('/compair/', '/');
   } else if (host.includes('leroi')) {
     currentSite = 'leroi';
   } else if (host.includes('compair')) {
     currentSite = 'compair';
   }
 
-  const response = NextResponse.next();
+  const response = NextResponse.rewrite(nextUrl);
   const config = siteConfigs[currentSite as keyof typeof siteConfigs];
   response.headers.set('x-site-config', JSON.stringify(config));
 
