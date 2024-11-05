@@ -22,17 +22,17 @@ export function middleware(request: NextRequest) {
   const host = headers.get('host') || '';
   let currentSite = 'default';
 
-  // Check URL path for testing in Vercel deployment
-  if (nextUrl.pathname.startsWith('/leroi/')) {
+  console.log('host', host);
+
+  // Determine site based on path
+  if (nextUrl.pathname.startsWith('/leroi')) {
     currentSite = 'leroi';
-    nextUrl.pathname = nextUrl.pathname.replace('/leroi/', '/');
-  } else if (nextUrl.pathname.startsWith('/compair/')) {
+    // Rewrite to root
+    nextUrl.pathname = '/';
+  } else if (nextUrl.pathname.startsWith('/compair')) {
     currentSite = 'compair';
-    nextUrl.pathname = nextUrl.pathname.replace('/compair/', '/');
-  } else if (host.includes('leroi')) {
-    currentSite = 'leroi';
-  } else if (host.includes('compair')) {
-    currentSite = 'compair';
+    // Rewrite to root
+    nextUrl.pathname = '/';
   }
 
   const response = NextResponse.rewrite(nextUrl);
